@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define MAX_WORD_LEN 255
-#define BAR_CHAR '*'
+#define BAR_CHAR '|'
 
 main()
 {
@@ -41,7 +41,7 @@ main()
 		}
 	}
 
-	for (i = 1; i < max_word_len; ++i) { /* started from index 1, since 0 length words doesn't exist*/
+	for (i = 1; i <= max_word_len; ++i) { /* started from index 1, since 0 length words doesn't exist*/
 		printf("%2d ", i);
 		for (j = 0; j < word_histogram[i]; ++j) 
 			printf("%c ", BAR_CHAR);
@@ -50,13 +50,13 @@ main()
 	}
 
 	printf("\n                Fig1: Histogram : Horizontal Bars                     \n");
-	printf("\n                ---------------------------------                     \n");
+	printf("                ---------------------------------                     \n");
 
 	printf("\n");
 	current_occurrence = max_occurrence_value;
 	for (i = 0; i < max_occurrence_value; ++i) {
 		printf("%2d ", current_occurrence);
-		for (j = 1; j < max_word_len; ++j) {
+		for (j = 1; j <= max_word_len; ++j) {
 			if (word_histogram[j] == current_occurrence) {
 				printf(" %c ", BAR_CHAR);
 			}
@@ -71,10 +71,10 @@ main()
 		--current_occurrence;
 	}
 	printf("   ");
-	for (i = 1; i < max_word_len; ++i)
+	for (i = 1; i <= max_word_len; ++i)
 		printf("%2d ", i);
 	printf("\n");
 
 	printf("\n                Fig2: Histogram : Vertical Bars                     \n");
-	printf("\n                -------------------------------                     \n");
+	printf("                -------------------------------                     \n");
 }
