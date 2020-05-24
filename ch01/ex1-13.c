@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define MAX_WORD_LEN 255
-#define BAR_CHAR '|'
+#define BAR_CHAR '*'
 
 main()
 {
