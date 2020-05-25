@@ -2,7 +2,10 @@
 #include <stdio.h>
 
 #define MAXLINE 1000
-#define LINE_CUTOFF 80
+
+#ifndef LINE_CUTOFF
+	#define LINE_CUTOFF 80
+#endif
 
 int _getline(char line[], int maxline);
 
@@ -13,21 +16,26 @@ main()
 
 	while ((len = _getline(line, MAXLINE)) > 0) {
 		if (len > LINE_CUTOFF)
-			printf("%s\n", line);
+			printf("[%3d] %s", len, line);
 	}
 }
 
 int _getline(char line[], int limit)
 {
 	int c;
-	int i;
+	int i, j;
 	
-	for (i = 0; i<limit-1 && (c = getchar())!=EOF && c!='\n'; ++i)
-		line[i] = c;
+	for (i = 0, j = 0; (c = getchar())!=EOF && c!='\n'; ++i) {
+		if (j < limit-2) { /* room for newline and null */
+			line[j] = c;
+			++j;
+		}
+	}
 	if (c == '\n') {
-		line[i] = c;
+		line[j] = c;
+		++j;
 		++i;
 	}
-	line[i] = '\0';
+	line[j] = '\0';
 	return i;
 }
