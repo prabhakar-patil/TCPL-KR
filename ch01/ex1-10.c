@@ -15,12 +15,14 @@ main()
 			putchar('t');
 		}
 
-		if(ch == '\b') {
+		if(ch == '\b') { /* entered from keyboard from input as Ctrl-H*/
 			putchar('\\');
 			putchar('b');
 		}
 		
-		if(ch == '\\')
+		if(ch == '\\') { /* c backslash is represented as \\ and entered as \ from keyboard at input */
 			putchar('\\');
+			putchar('\\');
+		}
 	}
 }
