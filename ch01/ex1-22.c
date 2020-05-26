@@ -1,73 +1,82 @@
 /* Exercise 1-22. Write a program to ``fold'' long input lines into two or more shorter lines after the last non-blank character that occurs before the n-th column of input. Make sure your program does something intelligent with very long lines, and if there are no blanks or tabs before the specified column. */
 #include <stdio.h>
-#define MAXLINE 1000
-#ifndef FOLDAT
-	#define FOLDAT 80
+#define TABSTOP 8
+#ifndef MAXCOL
+	#define MAXCOL 80
 #endif
-int _getline(char line[], int maxline);
-int fold(char line[], int col);
+int expandtab(char line[], int pos);
+int findblank(char line[], int pos);
+void printline(char line[], int pos);
+int newcurpos(char line[], int pos);
 main()
 {
 	int i;
-	int len;
-	int nr_folds; 		/* keeps count of folds of a line */
-	char line[MAXLINE];
-	len = 0;
-	nr_folds = 0;
-	while ((len = _getline(line, MAXLINE)) > 0) {
-		nr_folds = fold(line, FOLDAT);
-		printf("%s", line);
-		/*while (nr_folds) {
-			for (i = 0; line[i] != '\n' && i < MAXLINE; ++i) {
-				putchar(line[i]);
-			}
-			if (i < MAXLINE)
-				putchar(line[i]);
-			--nr_folds;
-		}*/
-	}
-}
-/* folds a line > maxcol into two or more
- * maxcol: max column number beyond which line is to be folded
- * returns fold count: a single line folded in n lines */
-int fold(char line[], int maxcol)
-{
-	int nr_folds;	/* fold count of input line after fold operation done */
-	int len; 	/* length of input line */
-	int i, j;
-	for (i = 0; line[i] != '\n'; ++i);
-	len = i;
-	/*if (len <= maxcol)
-		return 1;
-		*/
-	nr_folds = (len-1)/maxcol + 1;
-	/* look back from end to find blank of tab character to fold line */
-	for (i = 0; i < nr_folds-1; i++) {
-		//for (j = ((i+1)*maxcol-1); (j >= i*maxcol) && (line[j]!='\t' || line[j]!=' '); --j);
-		j = (i+1)*maxcol - 1;
-		printf("j:[%2d, %2d]\n", i*maxcol, j);
-		while ((j >= i*maxcol) && line[j] != '\t' && line[j] != ' ')
-			--j;
-		if (j >= (i*maxcol))
-			line[j] = '\n';
-	}
-	return nr_folds;
-}
-int _getline(char line[], int maxline)
-{
-	int i, j;
 	int c;
-	for (i = 0, j = 0; (c = getchar())!=EOF && c!='\n'; ++i) {
-		if (j < maxline-2) { /* room for newline and null */
-			line[j] = c;
-			++j;
+	int pos;		/* holds current position of incoming character in line */
+	char line[MAXCOL];
+	pos = 0;
+	while ((c = getchar()) != EOF) {
+		line[pos] = c;
+		if (c == '\t') {
+			pos = expandtab(line, pos);
+		}
+		else if (c == '\n') {
+			printline(line, pos);
+			pos = 0;
+		}
+		else if (++pos >= MAXCOL) {
+			pos = findblank(line, pos);
+			printline(line, pos);
+			pos = newcurpos(line, pos);
 		}
 	}
-	if (c == '\n') {
-		line[j] = c;
+}
+int newcurpos(char line[], int pos)
+{
+	int i, j;
+	if (pos >= MAXCOL)
+		return 0;
+	j = 0;
+	for (i = pos; i < MAXCOL; ++i) {
+		line[j] = line[i];
 		++j;
-		++i;
 	}
-	line[j] = '\0';
-	return i; /* original line length */
+	return j;
+}
+/* finds blank character left from current position pointed by pos
+ * if blank char does not find, returns pos as it is back to callee
+ * indicating not blank found */
+int findblank(char line[], int pos)
+{
+	int i;
+	for (i = pos; i > -1; --i) {
+		if (line[i] == ' ')
+			return i;
+	}
+	if (i == 0)
+		return pos;	/* no blank found */
+}
+/* prints a line buffer till current position pointed by pos
+ * additionally inserts newline to output */
+void printline(char line[], int pos)
+{
+	int i;
+	for (i = 0; i < pos; ++i)
+		putchar(line[i]);
+	putchar('\n');
+}
+/* expands a tab to blanks at position in line buffer pointed by pos
+ * tab to blank calculation is based on current pos w.r.t. TABSTOP */
+int expandtab(char line[], int pos)
+{
+	line[pos] = ' '; /* one tab can take at least one space */
+	for (pos = pos+1; pos < MAXCOL && (pos % TABSTOP)!= 0; ++pos)
+		line[pos] = ' ';
+	if (pos < MAXCOL) {
+		return pos;
+	}
+	else {
+		printline(line, pos);
+		return 0; /* since line is printed out, reset pos */
+	}
 }
