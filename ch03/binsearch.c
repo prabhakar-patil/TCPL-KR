@@ -1,23 +1,28 @@
-#include <stdio.h> 
+#include <stdio.h>
 
 #ifndef SNUM
 	#define SNUM 5
 #endif
 
+#ifndef LEN
+	#define LEN 0xFFFF
+#endif
+
+int v[LEN];
+
 int binsearch(int x, int v[], int n);
 
 main()
 {
-	int i;
-	int x;
-	int v[10];
+	int i, n, x;
 
+	n = LEN;
 	/* v[] in increasing order */
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < n; i++)
 		v[i] = i;
 
 	x = SNUM;
-	printf ("%d position in v[] : %d\n", x, binsearch(x, v, 10));
+	printf ("%d position in v[] : %d\n", x, binsearch(x, v, n));
 	return 0;
 }
 
